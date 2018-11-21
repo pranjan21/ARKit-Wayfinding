@@ -1,12 +1,10 @@
 //
-//  SphereNode.swift
-//  ARKitWorkshop
+//  BaseNode.swift
+//  ARKitDemoApp
 //
-//  Created by TSL075 on 2018-11-21.
-//  Copyright © 2018 TSL075. All rights reserved.
+//  Created by Christopher Webb-Orenstein on 8/27/17.
+//  Copyright © 2017 Christopher Webb-Orenstein. All rights reserved.
 //
-
-import Foundation
 
 import SceneKit
 import UIKit
@@ -14,6 +12,22 @@ import ARKit
 import CoreLocation
 
 class BaseNode: SCNNode {
+    
+    let title: String
+    var anchor: ARAnchor?
+//    var location: CLLocation!
+    
+    init(title: String) {
+        self.title = title
+        super.init()
+        let billboardConstraint = SCNBillboardConstraint()
+        billboardConstraint.freeAxes = SCNBillboardAxis.Y
+        constraints = [billboardConstraint]
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func createSphereNode(with radius: CGFloat, color: UIColor) -> SCNNode {
         let geometry = SCNSphere(radius: radius)
@@ -40,3 +54,4 @@ class BaseNode: SCNNode {
         addChildNode(annotationNode)
     }
 }
+

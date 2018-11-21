@@ -108,16 +108,18 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         print("----------------- Called rendered with node: \(node), anchor: \(anchor)")
         if !anchor.isKind(of: ARPlaneAnchor.self) {
-            let scene = SCNScene(named: "art.scnassets/star/star.dae")!
-            let lampNode = scene.rootNode.childNode(withName: "lamp", recursively: true)!
-            let starNode = scene.rootNode.childNode(withName: "star", recursively: true)!
-            let lamp2Node = scene.rootNode.childNode(withName: "lamp2", recursively: true)!
             
-            node.addChildNode(lampNode)
-            node.addChildNode(starNode)
-            node.addChildNode(lamp2Node)
-            
-            self.destinationNode = starNode
+            var distanceString: String = "-"
+            if let startPos = cameraVector {
+                let distance = node.worldPosition.distance(vector: startPos)
+                distanceString = String(distance)
+            }
+
+            let sphereNode = BaseNode(title: "Nodes")
+            sphereNode.addNode(with: 0.25, and: UIColor.blue, and: distanceString)
+            node.addChildNode(sphereNode)
+
+            self.destinationNode = sphereNode
             
         }
         
@@ -251,6 +253,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 //        node.addChildNode(planeNode)
 //        node.name = "plane"
     }
+
     
 }
 
