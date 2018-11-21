@@ -20,6 +20,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var destinationPositions:[SCNVector3] = []
     var planeAnchors: [ARAnchor] = []
     var pathNodes:[SCNNode] = []
+    @IBOutlet weak var informationLabel: UILabel!
     
     var lowestPlaneAnchor: ARAnchor?
   
@@ -34,7 +35,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UIApplication.shared.isIdleTimerDisabled = true
+//        UIApplication.shared.isIdleTimerDisabled = true
         startSession()
     }
     
@@ -80,6 +81,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         let anchor = firstPoint.anchor ?? ARAnchor(transform: firstPoint.worldTransform)
         sceneView.session.add(anchor: anchor)
+        
+        addPathToNode(with: cameraVector, destinationPosition: anchor.transform.position())
     }
     
     //-----------------------------------------------------------
@@ -111,44 +114,52 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             node.addChildNode(sphereNode)
 
             self.destinationNode = sphereNode
-            
         }
         
         if let planeAnchor = anchor as? ARPlaneAnchor {
             planeAnchors.append(planeAnchor)
-            let grid = Grid(anchor: anchor as! ARPlaneAnchor)
-            self.grids.append(grid)
-            node.addChildNode(grid)
+//            let grid = Grid(anchor: anchor as! ARPlaneAnchor)
+//            self.grids.append(grid)
+//            node.addChildNode(grid)
             
             planeAnchors.sort { (anchor1, anchor2) -> Bool in
                 anchor1.transform.columns.3.y < anchor2.transform.columns.3.y
             }
             lowestPlaneAnchor = planeAnchors.first
             
+            DispatchQueue.main.async { [weak self] in
+                self?.informationLabel.text = "Success! We have detected the floor. Please begin your wayfinding journey :D!"
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4, execute: {
+                    self?.informationLabel.isHidden = true
+                })
+            }
+            
             print("------------------------ Lowest Plane Anchor is: \(String(describing: lowestPlaneAnchor))")
         }
     }
     
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        let grid = self.grids.filter { grid in
-            return grid.anchor.identifier == anchor.identifier
-            }.first
-        
-        guard let foundGrid = grid else {
-            return
-        }
-        
-        foundGrid.update(anchor: anchor as! ARPlaneAnchor)
-    }
-    
-    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
-        
-        guard let destNode = self.destinationNode else {
-            return
-        }
-        
-        addPathToNode(with: cameraVector, destinationPosition: destNode.worldPosition)
-    }
+//    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+////        let grid = self.grids.filter { grid in
+////            return grid.anchor.identifier == anchor.identifier
+////            }.first
+////
+////        guard let foundGrid = grid else {
+////            return
+////        }
+////
+////        foundGrid.update(anchor: anchor as! ARPlaneAnchor)
+//
+//    }
+//
+//    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+//
+////        guard let destNode = self.destinationNode else {
+////            return
+////        }
+////
+////        addPathToNode(with: cameraVector, destinationPosition: destNode.worldPosition)
+//    }
     
     //-----------------------------------------------------------
     //MARK - Helpers
@@ -156,8 +167,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 
     
     func addPathToNode(with startPosition: SCNVector3?, destinationPosition: SCNVector3?) {
-        
         let hasDrawnToDestination = destinationPositions.contains(where: { position in
+            
             return destinationPosition == position
         })
         
@@ -168,8 +179,10 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
         
         destinationPositions.append(destinationPosition)
-
+        
+        print("*~*~*~*~*~*~~**~ ADDING PATH TO DESTINATION NODE: \(destinationNode) \n, where destinationPositions are: \(destinationPositions)")
         addLine(startPosition: startPosition, destPosition: destinationPosition)
+        
     }
     
     func addPlane(startPosition: SCNVector3, destPosition: SCNVector3) {

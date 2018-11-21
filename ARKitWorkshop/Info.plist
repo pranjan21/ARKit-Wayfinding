@@ -22,16 +22,16 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string></string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location always and when in usage description</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Location always usage description</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Location usage desription</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Location always usage description</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Location always and when in usage description</string>
-    <key>NSLocationUsageDescription</key>
-    <string>Location usage desription</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -44,8 +44,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
