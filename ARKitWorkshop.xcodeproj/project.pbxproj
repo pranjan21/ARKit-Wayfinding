@@ -13,6 +13,7 @@
 		8549BC6721A536C5005B3424 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6621A536C5005B3424 /* Extensions.swift */; };
 		8549BC6C21A53827005B3424 /* LineNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6B21A53827005B3424 /* LineNode.swift */; };
 		8549BC6E21A53CA3005B3424 /* LineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6D21A53CA3005B3424 /* LineSegment.swift */; };
+		8549BC7021A57058005B3424 /* PlaneNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6F21A57058005B3424 /* PlaneNode.swift */; };
 		8558BBBE219960610042C302 /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8558BBBD219960610042C302 /* Grid.swift */; };
 		85D8E3A5213DD8C9009C223B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E3A4213DD8C9009C223B /* AppDelegate.swift */; };
 		85D8E3A7213DD8C9009C223B /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 85D8E3A6213DD8C9009C223B /* art.scnassets */; };
@@ -48,6 +49,7 @@
 		8549BC6621A536C5005B3424 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		8549BC6B21A53827005B3424 /* LineNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineNode.swift; sourceTree = "<group>"; };
 		8549BC6D21A53CA3005B3424 /* LineSegment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineSegment.swift; sourceTree = "<group>"; };
+		8549BC6F21A57058005B3424 /* PlaneNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaneNode.swift; sourceTree = "<group>"; };
 		8558BBBD219960610042C302 /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		85D8E3A1213DD8C9009C223B /* ARKitWorkshop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARKitWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85D8E3A4213DD8C9009C223B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				8549BC6621A536C5005B3424 /* Extensions.swift */,
 				8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */,
 				8549BC6B21A53827005B3424 /* LineNode.swift */,
+				8549BC6F21A57058005B3424 /* PlaneNode.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 				8549BC6021A3F3AD005B3424 /* SCNVectorExtention.swift in Sources */,
 				8549BC6721A536C5005B3424 /* Extensions.swift in Sources */,
 				8549BC6521A532EF005B3424 /* SphereNode.swift in Sources */,
+				8549BC7021A57058005B3424 /* PlaneNode.swift in Sources */,
 				85D8E3A9213DD8C9009C223B /* ARViewController.swift in Sources */,
 				85D8E3A5213DD8C9009C223B /* AppDelegate.swift in Sources */,
 				8558BBBE219960610042C302 /* Grid.swift in Sources */,

@@ -10,21 +10,28 @@ import Foundation
 import ARKit
 
 extension SCNNode {
-    static func lineNode(startPosition: SCNVector3, destinationPosition: SCNVector3, radius: CGFloat = 0.05) -> SCNNode {
+    static func lineNode(baselinePlaneAnchor:ARAnchor, startPosition: SCNVector3, destinationPosition: SCNVector3, radius: CGFloat = 0.2) -> SCNNode {
         let vector = destinationPosition - startPosition
         let height = vector.length()
         
         let material = SCNMaterial()
-        //material.diffuse.contents = UIImage(named: "petal.png")
-        let cylinder = SCNCylinder(radius: radius, height: CGFloat(height))
-        cylinder.materials = [material]
+        material.diffuse.contents  = UIColor.cyan
+        material.specular.contents = UIColor.green
+  
+//        let cylinder = SCNCylinder(radius: radius, height: CGFloat(height))
+//        cylinder.materials = [material]
+//
+        let box = SCNBox(width: 0.5, height: CGFloat(height), length: 0.1, chamferRadius: 0.05)
+        box.materials = [material]
+        box.firstMaterial?.transparency = 0.8
         
-        let node = SCNNode(geometry: cylinder)
+        let node = SCNNode(geometry: box)
         
-//        let positionOnFloor = SCNVector3Make((destinationPosition.x + startPosition.x)/2, 0, (destinationPosition.z+startPosition.z)/2 )
-        node.position = (destinationPosition + startPosition) / 2
-//        node.eulerAngles = SCNVector3.lineEulerAngles(vector: vector)
-                node.transform = SCNMatrix4MakeRotation(Float(-Double.pi / 2.0), 1.0, 0.0, 0.0);
+        node.position.x = (destinationPosition.x + startPosition.x) / 2
+        node.position.y = baselinePlaneAnchor.transform.columns.3.y
+        node.position.z = (destinationPosition.z + startPosition.z) / 2
+        
+        node.eulerAngles = SCNVector3.lineEulerAngles(vector: vector)
         return node
     }
 }
@@ -37,7 +44,7 @@ class LineNode: SCNNode
         material: [SCNMaterial] )  // any material.
     {
         super.init()
-        let height1 = self.distanceBetweenPoints2(A: v1, B: v2) as CGFloat //v1.distance(v2)
+        let  height1 = self.distanceBetweenPoints2(A: v1, B: v2) as CGFloat //v1.distance(v2)
         
         position = v1
         
@@ -52,7 +59,7 @@ class LineNode: SCNNode
         cylgeo.materials = material
         
         let ndCylinder = SCNNode(geometry: cylgeo )
-        ndCylinder.position.y = 1//Float(-height1/2) + 0.001
+        ndCylinder.position.y = Float(-height1/2) + 0.001
         ndZAlign.addChildNode(ndCylinder)
         
         addChildNode(ndZAlign)
