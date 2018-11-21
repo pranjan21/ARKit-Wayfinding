@@ -26,10 +26,18 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Location always usage description</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Location always and when in usage description</string>
+    <key>NSLocationUsageDescription</key>
+    <string>Location usage desription</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 		<string>arkit</string>
+		<string>location-services</string>
+		<string>gps</string>
 	</array>
 	<key>UIStatusBarHidden</key>
 	<true/>
