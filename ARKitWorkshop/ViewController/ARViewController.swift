@@ -10,7 +10,7 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     var grids = [Grid]()
@@ -18,46 +18,62 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var destinationNode: SCNNode?
     var artScene: SCNScene!
     var destinationPositions:[SCNVector3] = []
+    var planeAnchors: [ARAnchor] = []
+    var pathNodes:[SCNNode] = []
+    
+    var lowestPlaneAnchor: ARAnchor?
     
     @IBOutlet weak var labelView: UIView!
     @IBOutlet weak var distanceAmount: UILabel!
+  
+    //-----------------------------------------------------------
+    //MARK - View Lifecycle
+    //-----------------------------------------------------------
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        labelView.sw_roundedFrame()
-        
-        sceneView.delegate = self
-        sceneView.showsStatistics = true
-        sceneView.automaticallyUpdatesLighting = true
-        sceneView.debugOptions = [.showFeaturePoints, .showWorldOrigin]
-        
-        distanceAmount.text = "-"
+        setupScene()
+        setupDistanceLabel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         UIApplication.shared.isIdleTimerDisabled = true
-        
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .horizontal
-        configuration.worldAlignment = .gravityAndHeading
-        sceneView.session.delegate = self
-        sceneView.session.run(configuration)
+        startSession()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         sceneView.session.pause()
     }
-//
-//    func anchorToBurjKhalifa() {
-//
-////        25.1972° N, 55.2744° E
-//
-//        let anchor = ARAnchor(
-//    }
-//
+    
+    //-----------------------------------------------------------
+    //MARK - Setup Methods
+    //-----------------------------------------------------------
+    
+    private func setupScene() {
+        sceneView.delegate = self
+        sceneView.showsStatistics = true
+        sceneView.automaticallyUpdatesLighting = true
+        sceneView.debugOptions = [.showFeaturePoints, .showWorldOrigin]
+    }
+    
+    private func startSession() {
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = .horizontal
+//        configuration.worldAlignment = .gravityAndHeading
+        sceneView.session.delegate = self
+        sceneView.session.run(configuration)
+    }
+    
+    private func setupDistanceLabel() {
+        labelView.sw_roundedFrame()
+        distanceAmount.text = "-"
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - UITouch Methods
+    //-----------------------------------------------------------
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
@@ -74,6 +90,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let anchor = firstPoint.anchor ?? ARAnchor(transform: firstPoint.worldTransform)
         sceneView.session.add(anchor: anchor)
     }
+    
+    //-----------------------------------------------------------
+    //MARK - ARSessionDelegate
+    //-----------------------------------------------------------
+    
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        let currentFrame = frame.camera.transform
+        cameraVector = currentFrame.position()
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - ARSCNViewDelegate
+    //-----------------------------------------------------------
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         
@@ -92,43 +121,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             
         }
         
-        
         if let planeAnchor = anchor as? ARPlaneAnchor {
+            planeAnchors.append(planeAnchor)
             let grid = Grid(anchor: anchor as! ARPlaneAnchor)
             self.grids.append(grid)
             node.addChildNode(grid)
+            
+            planeAnchors.sort { (anchor1, anchor2) -> Bool in
+                anchor1.transform.columns.3.y < anchor2.transform.columns.3.y
+            }
+            lowestPlaneAnchor = planeAnchors.first
+            
+            print("------------------------ Lowest Plane Anchor is: \(lowestPlaneAnchor)")
         }
-    }
-    
-    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
-        
-        guard let destNode = self.destinationNode else {
-            return
-        }
-        
-        addLineToNode(with: cameraVector, destinationPosition: destNode.worldPosition)
-    }
-    
-    func addLineToNode(with startPosition: SCNVector3?, destinationPosition: SCNVector3?) {
-        
-        
-        let hasDrawnToDestination = destinationPositions.contains(where: { position in
-            return destinationPosition == position
-        })
-        
-        
-        guard let startPosition = startPosition,
-            let destinationPosition = destinationPosition,
-            !hasDrawnToDestination else {
-                print("----------- No start or destination point.")
-                return
-        }
-        
-        distanceAmount.text = String(destinationPosition.distance(vector: startPosition))
-
-        destinationPositions.append(destinationPosition)
-        let line2Node = SCNNode.lineNode(startPosition: startPosition, destinationPosition: destinationPosition)
-        sceneView.scene.rootNode.addChildNode(line2Node)
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -143,52 +148,113 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         foundGrid.update(anchor: anchor as! ARPlaneAnchor)
     }
     
+    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        
+        guard let destNode = self.destinationNode else {
+            return
+        }
+        
+        addLineToNode(with: cameraVector, destinationPosition: destNode.worldPosition)
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - Helpers
+    //-----------------------------------------------------------
+    
+    func addLineToNode(with startPosition: SCNVector3?, destinationPosition: SCNVector3?) {
+        
+        
+        let hasDrawnToDestination = destinationPositions.contains(where: { position in
+            return destinationPosition == position
+        })
+        
+        
+        guard let startPosition = startPosition,
+            let destinationPosition = destinationPosition,
+            !hasDrawnToDestination else {
+                return
+        }
+        
+        destinationPositions.append(destinationPosition)
+
+
+
+        addPlane(startPosition: startPosition, destPosition: destinationPosition)
+
+        
+//        let lineNode = LineNode(v1: startPosition, v2: destinationPosition, material: [mat])
+//        self.sceneView.scene.rootNode.addChildNode(lineNode)
+
+//        let line2Node = SCNNode.lineNode(startPosition: startPosition,
+//                                         destinationPosition: destinationPosition)
+//        sceneView.scene.rootNode.addChildNode(line2Node)
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - ARSessionObserver
+    //-----------------------------------------------------------
+    
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
-        
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
         // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
     }
     
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
     }
     
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        let currentFrame = frame.camera.transform
-        cameraVector = currentFrame.position()
+
+    func addPlane(startPosition: SCNVector3, destPosition: SCNVector3) {
+        guard let lowestPlaneAnchor = lowestPlaneAnchor as? ARPlaneAnchor else {
+            print("---------------- Couldn't even find one plane anchor")
+            return
+        }
+
+        let width = CGFloat(0.5)
+        let vector = destPosition - startPosition
+        let height = CGFloat(vector.length())
+        let plane = SCNPlane(width: width, height: height)
+
+        let mat = SCNMaterial()
+        
+        mat.diffuse.contents  = UIColor.cyan
+        mat.specular.contents = UIColor.green
+        
+        plane.materials = [mat]
+
+        let planeNode = SCNNode(geometry: plane)
+        let position = (destPosition + startPosition) / 2
+
+        let x = CGFloat(position.x)
+        let y = CGFloat(lowestPlaneAnchor.transform.columns.3.y)
+        let z = CGFloat(position.z)
+        planeNode.position = SCNVector3(x,y,z)
+        planeNode.eulerAngles = SCNVector3.lineEulerAngles(vector: vector)
+//        planeNode.eulerAngles.x = -.pi / 2
+
+        sceneView.scene.rootNode.addChildNode(planeNode)
+
+        print("--------- Start Position: \(startPosition), \n Destination Position: \(destPosition), \n planeNode: \(planeNode)")
+        
+        //planeNode.eulerAngles.z = -.pi / 2
+        //
+        //
+        //        let lxz = sqrtf(vector.x * vector.x + vector.z * vector.z)
+        //        let pitchB = vector.y < 0 ? Float.pi - asinf(lxz/Float(height)) : asinf(lxz/Float(height))
+        //        let pitch = vector.z == 0 ? pitchB : sign(vector.z) * pitchB
+        
+        //        planeNode.constraints = [SCNLookAtConstraint(target: destinationNode!)]
+        
+//        node.addChildNode(planeNode)
+//        node.name = "plane"
     }
+    
 }
 
-extension matrix_float4x4 {
-    func position() -> SCNVector3 {
-        return SCNVector3(columns.3.x, columns.3.y, columns.3.z)
-    }
-}
 
-extension SCNNode {
-    static func lineNode(startPosition: SCNVector3, destinationPosition: SCNVector3, radius: CGFloat = 0.05) -> SCNNode {
-        let vector = destinationPosition - startPosition
-        let height = vector.length()
-        
-        let material = SCNMaterial()
-        material.diffuse.contents = UIImage(named: "petal.png")
-        let cylinder = SCNCylinder(radius: radius, height: CGFloat(height))
-        cylinder.materials = [material]
-        
-        let node = SCNNode(geometry: cylinder)
-        
-        let positionOnFloor = SCNVector3Make((destinationPosition.x + startPosition.x)/2, 0, (destinationPosition.z+startPosition.z)/2 )
-        node.position = positionOnFloor //(destinationPosition + startPosition) / 2
-        node.eulerAngles = SCNVector3.lineEulerAngles(vector: vector)
-//        node.transform = SCNMatrix4MakeRotation(Float(-Double.pi / 2.0), 1.0, 0.0, 0.0);
-        return node
-    }
-}
 
 
 //    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -242,22 +308,15 @@ extension SCNNode {
  }
  */
 
-extension UIView {
-    func sw_roundedFrame() {
-        let circleLayer = CAShapeLayer()
-        circleLayer.frame = bounds
-        circleLayer.strokeColor = UIColor.white.cgColor
-        circleLayer.fillColor = UIColor.clear.cgColor
-        circleLayer.lineWidth = 2.0
-        circleLayer.path = CGPath(ellipseIn: circleLayer.bounds, transform: nil)
-        
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = bounds
-        maskLayer.fillColor = UIColor.white.cgColor
-        maskLayer.path = CGPath(ellipseIn: circleLayer.bounds, transform: nil)
-        
-        layer.mask = maskLayer
-        layer.addSublayer(circleLayer)
-    }
 
-}
+
+
+
+//
+//    func anchorToBurjKhalifa() {
+//
+////        25.1972° N, 55.2744° E
+//
+//        let anchor = ARAnchor(
+//    }
+//

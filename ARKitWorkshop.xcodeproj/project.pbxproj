@@ -10,10 +10,13 @@
 		8549BC6021A3F3AD005B3424 /* SCNVectorExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */; };
 		8549BC6321A52E0D005B3424 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8549BC6221A52E0D005B3424 /* CoreLocation.framework */; };
 		8549BC6521A532EF005B3424 /* SphereNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6421A532EF005B3424 /* SphereNode.swift */; };
+		8549BC6721A536C5005B3424 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6621A536C5005B3424 /* Extensions.swift */; };
+		8549BC6C21A53827005B3424 /* LineNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6B21A53827005B3424 /* LineNode.swift */; };
+		8549BC6E21A53CA3005B3424 /* LineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6D21A53CA3005B3424 /* LineSegment.swift */; };
 		8558BBBE219960610042C302 /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8558BBBD219960610042C302 /* Grid.swift */; };
 		85D8E3A5213DD8C9009C223B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E3A4213DD8C9009C223B /* AppDelegate.swift */; };
 		85D8E3A7213DD8C9009C223B /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 85D8E3A6213DD8C9009C223B /* art.scnassets */; };
-		85D8E3A9213DD8C9009C223B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E3A8213DD8C9009C223B /* ViewController.swift */; };
+		85D8E3A9213DD8C9009C223B /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D8E3A8213DD8C9009C223B /* ARViewController.swift */; };
 		85D8E3AC213DD8C9009C223B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85D8E3AA213DD8C9009C223B /* Main.storyboard */; };
 		85D8E3AE213DD8CB009C223B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85D8E3AD213DD8CB009C223B /* Assets.xcassets */; };
 		85D8E3B1213DD8CB009C223B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85D8E3AF213DD8CB009C223B /* LaunchScreen.storyboard */; };
@@ -42,11 +45,14 @@
 		8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNVectorExtention.swift; sourceTree = "<group>"; };
 		8549BC6221A52E0D005B3424 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		8549BC6421A532EF005B3424 /* SphereNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereNode.swift; sourceTree = "<group>"; };
+		8549BC6621A536C5005B3424 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		8549BC6B21A53827005B3424 /* LineNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineNode.swift; sourceTree = "<group>"; };
+		8549BC6D21A53CA3005B3424 /* LineSegment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineSegment.swift; sourceTree = "<group>"; };
 		8558BBBD219960610042C302 /* Grid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		85D8E3A1213DD8C9009C223B /* ARKitWorkshop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARKitWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85D8E3A4213DD8C9009C223B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		85D8E3A6213DD8C9009C223B /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		85D8E3A8213DD8C9009C223B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		85D8E3A8213DD8C9009C223B /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
 		85D8E3AB213DD8C9009C223B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		85D8E3AD213DD8CB009C223B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		85D8E3B0213DD8CB009C223B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -93,6 +99,36 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8549BC6821A536E1005B3424 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				85D8E3A8213DD8C9009C223B /* ARViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		8549BC6921A53702005B3424 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				8549BC6D21A53CA3005B3424 /* LineSegment.swift */,
+				8549BC6421A532EF005B3424 /* SphereNode.swift */,
+				8558BBBD219960610042C302 /* Grid.swift */,
+				8549BC6621A536C5005B3424 /* Extensions.swift */,
+				8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */,
+				8549BC6B21A53827005B3424 /* LineNode.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		8549BC6A21A5372F005B3424 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				85D8E3AF213DD8CB009C223B /* LaunchScreen.storyboard */,
+				85D8E3AA213DD8C9009C223B /* Main.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
 		85D8E398213DD8C9009C223B = {
 			isa = PBXGroup;
 			children = (
@@ -117,16 +153,13 @@
 		85D8E3A3213DD8C9009C223B /* ARKitWorkshop */ = {
 			isa = PBXGroup;
 			children = (
-				8558BBBD219960610042C302 /* Grid.swift */,
+				8549BC6A21A5372F005B3424 /* Storyboards */,
+				8549BC6921A53702005B3424 /* Helpers */,
+				8549BC6821A536E1005B3424 /* ViewController */,
 				85D8E3A4213DD8C9009C223B /* AppDelegate.swift */,
 				85D8E3A6213DD8C9009C223B /* art.scnassets */,
-				85D8E3A8213DD8C9009C223B /* ViewController.swift */,
-				85D8E3AA213DD8C9009C223B /* Main.storyboard */,
 				85D8E3AD213DD8CB009C223B /* Assets.xcassets */,
-				85D8E3AF213DD8CB009C223B /* LaunchScreen.storyboard */,
 				85D8E3B2213DD8CB009C223B /* Info.plist */,
-				8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */,
-				8549BC6421A532EF005B3424 /* SphereNode.swift */,
 			);
 			path = ARKitWorkshop;
 			sourceTree = "<group>";
@@ -281,11 +314,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8549BC6C21A53827005B3424 /* LineNode.swift in Sources */,
 				8549BC6021A3F3AD005B3424 /* SCNVectorExtention.swift in Sources */,
+				8549BC6721A536C5005B3424 /* Extensions.swift in Sources */,
 				8549BC6521A532EF005B3424 /* SphereNode.swift in Sources */,
-				85D8E3A9213DD8C9009C223B /* ViewController.swift in Sources */,
+				85D8E3A9213DD8C9009C223B /* ARViewController.swift in Sources */,
 				85D8E3A5213DD8C9009C223B /* AppDelegate.swift in Sources */,
 				8558BBBE219960610042C302 /* Grid.swift in Sources */,
+				8549BC6E21A53CA3005B3424 /* LineSegment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
