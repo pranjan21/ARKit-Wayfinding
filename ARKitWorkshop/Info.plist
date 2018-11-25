@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Please allow the app the access when in use</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -21,13 +23,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string></string>
+	<string>Please allow the app to access the camera</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location always and when in usage description</string>
+	<string>Please allow the app to access location services when needed</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location always usage description</string>
+	<string>Please allow the app to access location services when needed</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Location usage desription</string>
+	<string>Please allow the app to access location services when needed</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -9,20 +9,51 @@
 import UIKit
 import SceneKit
 import ARKit
+import CoreLocation
 
-class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
+class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, CLLocationManagerDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet weak var informationLabel: UILabel!
+
     var grids = [Grid]()
+
     var cameraVector: SCNVector3?
     var destinationNode: SCNNode?
+
     var artScene: SCNScene!
     var destinationPositions:[SCNVector3] = []
     var planeAnchors: [ARAnchor] = []
     var pathNodes:[SCNNode] = []
-    @IBOutlet weak var informationLabel: UILabel!
-    
     var lowestPlaneAnchor: ARAnchor?
+    var starNode: SCNNode!
+    //CoreLocation
+    
+    let locationManager = CLLocationManager()
+    var userLocation = CLLocation()
+    
+    var originalTransform: SCNMatrix4!
+    
+    var heading: Double = 0.0
+    var distance: Float = 0.0 {
+        didSet {
+            setStatusText()
+        }
+    }
+    
+    var status: String = "" {
+        didSet {
+            setStatusText()
+        }
+    }
+    
+    func setStatusText() {
+        
+        var text = "Status: \(status)\n"
+        text += "Distance: \(String(format: "%.2f m", distance))"
+        informationLabel.text = text
+        print(text)
+    }
     //-----------------------------------------------------------
     //MARK - View Lifecycle
     //-----------------------------------------------------------
@@ -30,6 +61,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScene()
+        setupLocationManager()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,6 +93,104 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.session.run(configuration)
     }
     
+    private func setupLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestAlwaysAuthorization()
+        locationManager.requestLocation()
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - CLLocationManager
+    //-----------------------------------------------------------
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("-------------- location manager FAILED \(error)")
+        assertionFailure("Failed to get access to Location Services")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse {
+            locationManager.requestLocation()
+            locationManager.requestWhenInUseAuthorization()
+        } else{
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            userLocation = location        
+            connectToLandmark()
+            drawPathToLandmark()
+        }
+    }
+    
+    func connectToLandmark() {
+        let latitude = 25.1346
+        let longitude = 55.1714
+//        let heading =
+//        self.heading = heading
+        updateLocation(latitude, longitude)
+    }
+    
+    func drawPathToLandmark() {
+        print ("---------------------------------- \(cameraVector), \(starNode.worldPosition)")
+        addPathToNode(with: cameraVector, destinationPosition: starNode.worldPosition)
+    }
+    
+    func updateLocation(_ latitude: Double, _ longitude: Double) {
+        let location = CLLocation(latitude: latitude, longitude: longitude)
+        self.distance = Float(location.distance(from: self.userLocation))
+   
+        if self.starNode == nil {
+            let scene = SCNScene(named: "art.scnassets/ship.scn")!
+            starNode = scene.rootNode.childNode(withName: "ship", recursively: true)!
+            
+            //Move model's pivot to its center in the Y axis
+            let (minBox, maxBox) = starNode.boundingBox
+            starNode.pivot = SCNMatrix4MakeTranslation(0, (maxBox.y - minBox.y)/2, 0)
+            originalTransform = starNode.transform
+            
+            positionModel(location)
+            sceneView.scene.rootNode.addChildNode(starNode)
+            
+            let arrow = makeBillboardNode("⬇️".image()!)
+            arrow.position = SCNVector3Make(0,4,0)
+            starNode.addChildNode(arrow)
+        } else {
+            
+            SCNTransaction.begin()
+            SCNTransaction.animationDuration = 1.0
+            
+            positionModel(location)
+            
+            SCNTransaction.commit()
+        }
+    }
+    
+    func positionModel(_ location: CLLocation) {
+        // Rotate node
+        starNode.transform = rotateNode(Float(-1 * (self.heading - 180).toRadians()), self.originalTransform)
+        
+        // Translate node
+        starNode.position = translateNode(location)
+        
+        // Scale node
+        starNode.scale = scaleNode(location)
+    }
+    
+    func makeBillboardNode(_ image: UIImage) -> SCNNode {
+        let plane = SCNPlane(width: 10, height: 10)
+        plane.firstMaterial!.diffuse.contents = image
+        let node = SCNNode(geometry: plane)
+        node.constraints = [SCNBillboardConstraint()]
+        return node
+    }
+    
+
     //-----------------------------------------------------------
     //MARK - UITouch Methods
     //-----------------------------------------------------------

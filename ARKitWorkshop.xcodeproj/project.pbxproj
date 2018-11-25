@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8515580C21AA800A00E1CDFF /* FloatingPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8515580B21AA800A00E1CDFF /* FloatingPoint+Extension.swift */; };
+		8515580E21AA802D00E1CDFF /* Image+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8515580D21AA802D00E1CDFF /* Image+String.swift */; };
+		8515581221AAB9C600E1CDFF /* CLLocationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8515581121AAB9C600E1CDFF /* CLLocationHelper.swift */; };
 		8549BC6021A3F3AD005B3424 /* SCNVectorExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */; };
 		8549BC6321A52E0D005B3424 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8549BC6221A52E0D005B3424 /* CoreLocation.framework */; };
 		8549BC6521A532EF005B3424 /* SphereNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8549BC6421A532EF005B3424 /* SphereNode.swift */; };
@@ -43,6 +46,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8515580B21AA800A00E1CDFF /* FloatingPoint+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloatingPoint+Extension.swift"; sourceTree = "<group>"; };
+		8515580D21AA802D00E1CDFF /* Image+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+String.swift"; sourceTree = "<group>"; };
+		8515581121AAB9C600E1CDFF /* CLLocationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationHelper.swift; sourceTree = "<group>"; };
 		8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNVectorExtention.swift; sourceTree = "<group>"; };
 		8549BC6221A52E0D005B3424 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		8549BC6421A532EF005B3424 /* SphereNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereNode.swift; sourceTree = "<group>"; };
@@ -93,6 +99,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8515580F21AAB98100E1CDFF /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				8558BBBD219960610042C302 /* Grid.swift */,
+				8549BC6B21A53827005B3424 /* LineNode.swift */,
+				8549BC6F21A57058005B3424 /* PlaneNode.swift */,
+				8549BC6D21A53CA3005B3424 /* LineSegment.swift */,
+				8549BC6421A532EF005B3424 /* SphereNode.swift */,
+			);
+			path = Nodes;
+			sourceTree = "<group>";
+		};
+		8515581021AAB99200E1CDFF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */,
+				8549BC6621A536C5005B3424 /* Extensions.swift */,
+				8515580B21AA800A00E1CDFF /* FloatingPoint+Extension.swift */,
+				8515580D21AA802D00E1CDFF /* Image+String.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		8549BC6121A52E0D005B3424 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,13 +141,9 @@
 		8549BC6921A53702005B3424 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				8549BC6D21A53CA3005B3424 /* LineSegment.swift */,
-				8549BC6421A532EF005B3424 /* SphereNode.swift */,
-				8558BBBD219960610042C302 /* Grid.swift */,
-				8549BC6621A536C5005B3424 /* Extensions.swift */,
-				8549BC5F21A3F3AD005B3424 /* SCNVectorExtention.swift */,
-				8549BC6B21A53827005B3424 /* LineNode.swift */,
-				8549BC6F21A57058005B3424 /* PlaneNode.swift */,
+				8515581021AAB99200E1CDFF /* Extensions */,
+				8515580F21AAB98100E1CDFF /* Nodes */,
+				8515581121AAB9C600E1CDFF /* CLLocationHelper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -319,12 +344,15 @@
 			files = (
 				8549BC6C21A53827005B3424 /* LineNode.swift in Sources */,
 				8549BC6021A3F3AD005B3424 /* SCNVectorExtention.swift in Sources */,
+				8515580E21AA802D00E1CDFF /* Image+String.swift in Sources */,
 				8549BC6721A536C5005B3424 /* Extensions.swift in Sources */,
 				8549BC6521A532EF005B3424 /* SphereNode.swift in Sources */,
 				8549BC7021A57058005B3424 /* PlaneNode.swift in Sources */,
 				85D8E3A9213DD8C9009C223B /* ARViewController.swift in Sources */,
 				85D8E3A5213DD8C9009C223B /* AppDelegate.swift in Sources */,
 				8558BBBE219960610042C302 /* Grid.swift in Sources */,
+				8515581221AAB9C600E1CDFF /* CLLocationHelper.swift in Sources */,
+				8515580C21AA800A00E1CDFF /* FloatingPoint+Extension.swift in Sources */,
 				8549BC6E21A53CA3005B3424 /* LineSegment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
