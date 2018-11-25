@@ -23,7 +23,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet weak var informationLabel: UILabel!
     
     var lowestPlaneAnchor: ARAnchor?
-  
     //-----------------------------------------------------------
     //MARK - View Lifecycle
     //-----------------------------------------------------------
@@ -35,7 +34,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        UIApplication.shared.isIdleTimerDisabled = true
         startSession()
     }
     
@@ -58,7 +56,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     private func startSession() {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
-//        configuration.worldAlignment = .gravityAndHeading
+        configuration.worldAlignment = .gravityAndHeading
         sceneView.session.delegate = self
         sceneView.session.run(configuration)
     }
@@ -165,7 +163,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     //MARK - Helpers
     //-----------------------------------------------------------
 
-    
+ 
+
     func addPathToNode(with startPosition: SCNVector3?, destinationPosition: SCNVector3?) {
         let hasDrawnToDestination = destinationPositions.contains(where: { position in
             
