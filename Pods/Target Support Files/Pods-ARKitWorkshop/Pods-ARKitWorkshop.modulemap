@@ -1,0 +1,6 @@
+framework module Pods_ARKitWorkshop {
+  umbrella header "Pods-ARKitWorkshop-umbrella.h"
+
+  export *
+  module * { export * }
+}

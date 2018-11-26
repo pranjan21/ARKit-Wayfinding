@@ -1,0 +1,6 @@
+framework module JMapUIKit {
+  umbrella header "JMapUIKit.h"
+
+  export *
+  module * { export * }
+}

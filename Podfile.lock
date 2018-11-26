@@ -1,0 +1,29 @@
+PODS:
+  - JMapiOSSDK (5.2.3)
+  - UIKit-iOS-Pod (1.0.1)
+
+DEPENDENCIES:
+  - JMapiOSSDK (from `https://github.com/Jibestream/JMap-iOS-SDK-Pod.git`)
+  - UIKit-iOS-Pod (from `https://github.com/Jibestream/UIKit-iOS-Pod.git`)
+
+EXTERNAL SOURCES:
+  JMapiOSSDK:
+    :git: https://github.com/Jibestream/JMap-iOS-SDK-Pod.git
+  UIKit-iOS-Pod:
+    :git: https://github.com/Jibestream/UIKit-iOS-Pod.git
+
+CHECKOUT OPTIONS:
+  JMapiOSSDK:
+    :commit: 458336010b4c180e51e939f50c1ab01566a499d1
+    :git: https://github.com/Jibestream/JMap-iOS-SDK-Pod.git
+  UIKit-iOS-Pod:
+    :commit: fd2586758dcac514d490edef3d5ba04803c58965
+    :git: https://github.com/Jibestream/UIKit-iOS-Pod.git
+
+SPEC CHECKSUMS:
+  JMapiOSSDK: 51f439127f119491b55be7678153267741e9edd6
+  UIKit-iOS-Pod: 1b8d9005b6ba14783453fc7d1396660f815d7a86
+
+PODFILE CHECKSUM: 9715274e0c3a4791b2cd7aaf2ec5387028c8d905
+
+COCOAPODS: 1.5.3
