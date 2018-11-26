@@ -11,11 +11,25 @@ import SceneKit
 import ARKit
 import CoreLocation
 
+//let point1 = SCNVector3Make(3.9633987,-1.0010028,-4.06933)
+//let point2 = SCNVector3Make(9.339279,-0.30742192,-4.286807)
+
+struct PathPoint {
+    let point: SCNVector3
+    let emoji: String
+}
+
+//➡️
+//⬅️
+let point1 = PathPoint(point: SCNVector3Make(0,0,-5), emoji: "➡️")
+let point2 = PathPoint(point: SCNVector3Make(5,0,-5), emoji: "⬅️")
+
 class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, CLLocationManagerDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var informationLabel: UILabel!
 
+    var hasDrawn = false
     var grids = [Grid]()
 
     var cameraVector: SCNVector3?
@@ -30,30 +44,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     //CoreLocation
     
     let locationManager = CLLocationManager()
-    var userLocation = CLLocation()
-    
-    var originalTransform: SCNMatrix4!
-    
-    var heading: Double = 0.0
-    var distance: Float = 0.0 {
-        didSet {
-            setStatusText()
-        }
-    }
-    
-    var status: String = "" {
-        didSet {
-            setStatusText()
-        }
-    }
-    
-    func setStatusText() {
-        
-        var text = "Status: \(status)\n"
-        text += "Distance: \(String(format: "%.2f m", distance))"
-        informationLabel.text = text
-        print(text)
-    }
+    var locationHelper = CLLocationHelper()
+    let path: [PathPoint] = [point1, point2]
+
     //-----------------------------------------------------------
     //MARK - View Lifecycle
     //-----------------------------------------------------------
@@ -61,7 +54,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScene()
-        setupLocationManager()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,7 +74,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
         sceneView.delegate = self
         sceneView.showsStatistics = true
         sceneView.automaticallyUpdatesLighting = true
-        sceneView.debugOptions = [.showFeaturePoints, .showWorldOrigin]
+        sceneView.debugOptions = [.showFeaturePoints, .showWorldOrigin, .showCameras]
     }
     
     private func startSession() {
@@ -91,95 +83,34 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
         configuration.worldAlignment = .gravityAndHeading
         sceneView.session.delegate = self
         sceneView.session.run(configuration)
-    }
-    
-    private func setupLocationManager() {
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestAlwaysAuthorization()
-        locationManager.requestLocation()
-    }
-    
-    //-----------------------------------------------------------
-    //MARK - CLLocationManager
-    //-----------------------------------------------------------
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("-------------- location manager FAILED \(error)")
-        assertionFailure("Failed to get access to Location Services")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse {
-            locationManager.requestLocation()
-            locationManager.requestWhenInUseAuthorization()
-        } else{
-            locationManager.startUpdatingLocation()
-        }
-    }
-    
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            userLocation = location        
-            connectToLandmark()
-            drawPathToLandmark()
-        }
-    }
-    
-    func connectToLandmark() {
-        let latitude = 25.1346
-        let longitude = 55.1714
-//        let heading =
-//        self.heading = heading
-        updateLocation(latitude, longitude)
-    }
-    
-    func drawPathToLandmark() {
-        print ("---------------------------------- \(cameraVector), \(starNode.worldPosition)")
-        addPathToNode(with: cameraVector, destinationPosition: starNode.worldPosition)
-    }
-    
-    func updateLocation(_ latitude: Double, _ longitude: Double) {
-        let location = CLLocation(latitude: latitude, longitude: longitude)
-        self.distance = Float(location.distance(from: self.userLocation))
-   
-        if self.starNode == nil {
-            let scene = SCNScene(named: "art.scnassets/ship.scn")!
-            starNode = scene.rootNode.childNode(withName: "ship", recursively: true)!
-            
-            //Move model's pivot to its center in the Y axis
-            let (minBox, maxBox) = starNode.boundingBox
-            starNode.pivot = SCNMatrix4MakeTranslation(0, (maxBox.y - minBox.y)/2, 0)
-            originalTransform = starNode.transform
-            
-            positionModel(location)
-            sceneView.scene.rootNode.addChildNode(starNode)
-            
-            let arrow = makeBillboardNode("⬇️".image()!)
-            arrow.position = SCNVector3Make(0,4,0)
-            starNode.addChildNode(arrow)
-        } else {
-            
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 1.0
-            
-            positionModel(location)
-            
-            SCNTransaction.commit()
-        }
-    }
-    
-    func positionModel(_ location: CLLocation) {
-        // Rotate node
-        starNode.transform = rotateNode(Float(-1 * (self.heading - 180).toRadians()), self.originalTransform)
         
-        // Translate node
-        starNode.position = translateNode(location)
+    }
+    
+    func drawNode() {
+        if hasDrawn {
+            return
+        }
         
-        // Scale node
-        starNode.scale = scaleNode(location)
+        hasDrawn = true
+        var previousPoint = cameraVector!
+        
+        path.enumerated().forEach { (offset, destPathPoint) in
+            let destVector = destPathPoint.point
+            let destination =  SCNVector3Make(cameraVector!.x + destVector.x, 0, cameraVector!.z + destVector.z)
+            addNode(to: destination, emoji: destPathPoint.emoji )
+            addPathToNode(with: previousPoint, destinationPosition: destination)
+            previousPoint = destVector
+        }
+        
+    }
+
+    func addNode(to position: SCNVector3, emoji: String) {
+        let arrow = makeBillboardNode(emoji.image()!)
+        arrow.position = position
+        arrow.scale = SCNVector3Make(0.1, 0.1, 0.1)
+        arrow.castsShadow = true
+        arrow.opacity = 0.7
+        sceneView.scene.rootNode.addChildNode(arrow)
     }
     
     func makeBillboardNode(_ image: UIImage) -> SCNNode {
@@ -246,15 +177,14 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
         
         if let planeAnchor = anchor as? ARPlaneAnchor {
             planeAnchors.append(planeAnchor)
-//            let grid = Grid(anchor: anchor as! ARPlaneAnchor)
-//            self.grids.append(grid)
-//            node.addChildNode(grid)
-            
+
             planeAnchors.sort { (anchor1, anchor2) -> Bool in
                 anchor1.transform.columns.3.y < anchor2.transform.columns.3.y
             }
             lowestPlaneAnchor = planeAnchors.first
             
+            drawNode()
+
             DispatchQueue.main.async { [weak self] in
                 self?.informationLabel.text = "Success! We have detected the floor. Please begin your wayfinding journey :D!"
 
@@ -294,7 +224,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     //-----------------------------------------------------------
 
  
-
     func addPathToNode(with startPosition: SCNVector3?, destinationPosition: SCNVector3?) {
         let hasDrawnToDestination = destinationPositions.contains(where: { position in
             

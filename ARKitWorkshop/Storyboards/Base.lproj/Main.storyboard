@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BrB-h1-WRS">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="333.5"/>
                             </arscnView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please move the phone around to allow the app to detect a plane" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LsL-fy-0If">
                                 <rect key="frame" x="16" y="36" width="343" height="70"/>
@@ -31,15 +31,25 @@
                                 <nil key="highlightedColor"/>
                                 <size key="shadowOffset" width="6" height="-1"/>
                             </label>
+                            <containerView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="emO-E9-DSh">
+                                <rect key="frame" x="0.0" y="333.5" width="375" height="333.5"/>
+                                <connections>
+                                    <segue destination="H0X-PQ-FUP" kind="embed" id="G1x-Xo-Bc1"/>
+                                </connections>
+                            </containerView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="LsL-fy-0If" firstAttribute="top" secondItem="fQZ-KI-GVf" secondAttribute="top" constant="16" id="EVL-RS-tdh"/>
+                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="trailing" secondItem="emO-E9-DSh" secondAttribute="trailing" id="Fu4-8s-mkB"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" id="GsS-dJ-CKf"/>
                             <constraint firstItem="fQZ-KI-GVf" firstAttribute="trailing" secondItem="LsL-fy-0If" secondAttribute="trailing" constant="16" id="Lsz-ah-Qla"/>
-                            <constraint firstItem="BrB-h1-WRS" firstAttribute="bottom" secondItem="fQZ-KI-GVf" secondAttribute="bottom" id="VpT-BR-CcM"/>
+                            <constraint firstItem="emO-E9-DSh" firstAttribute="top" secondItem="BrB-h1-WRS" secondAttribute="bottom" id="Lwr-LR-oUx"/>
+                            <constraint firstItem="fQZ-KI-GVf" firstAttribute="bottom" secondItem="emO-E9-DSh" secondAttribute="bottom" id="OYZ-of-X17"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="trailing" secondItem="fQZ-KI-GVf" secondAttribute="trailing" id="XyZ-9z-H8e"/>
+                            <constraint firstItem="emO-E9-DSh" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" id="ZJZ-el-GHW"/>
                             <constraint firstItem="LsL-fy-0If" firstAttribute="leading" secondItem="fQZ-KI-GVf" secondAttribute="leading" constant="16" id="jSK-W1-mAn"/>
+                            <constraint firstItem="emO-E9-DSh" firstAttribute="height" secondItem="BrB-h1-WRS" secondAttribute="height" id="jqp-AO-P4O"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="top" secondItem="U0K-SW-4ec" secondAttribute="top" id="rJc-2c-zQA"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="fQZ-KI-GVf"/>
@@ -52,6 +62,36 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="136.80000000000001" y="122.78860569715144"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="v1h-5x-HWx">
+            <objects>
+                <viewController id="H0X-PQ-FUP" customClass="MapViewController" customModule="ARKitWorkshop" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="kcu-FK-zAQ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="333.5"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QUn-hY-Bsl" customClass="JMapCanvas">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="333.5"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="QUn-hY-Bsl" firstAttribute="top" secondItem="kcu-FK-zAQ" secondAttribute="top" id="2L6-UP-ym4"/>
+                            <constraint firstAttribute="bottom" secondItem="QUn-hY-Bsl" secondAttribute="bottom" id="AOG-NY-7Tn"/>
+                            <constraint firstItem="QUn-hY-Bsl" firstAttribute="leading" secondItem="kcu-FK-zAQ" secondAttribute="leading" id="Ko9-1q-NFo"/>
+                            <constraint firstAttribute="trailing" secondItem="QUn-hY-Bsl" secondAttribute="trailing" id="SLc-4q-YTG"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="sTw-TK-PhG"/>
+                    </view>
+                    <connections>
+                        <outlet property="canvas" destination="QUn-hY-Bsl" id="ySg-ev-X5K"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zWc-U7-KRB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="911" y="296"/>
         </scene>
     </scenes>
 </document>

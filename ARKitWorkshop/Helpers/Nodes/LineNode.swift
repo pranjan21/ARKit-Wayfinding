@@ -23,7 +23,7 @@ extension SCNNode {
 //
         let box = SCNBox(width: 0.5, height: CGFloat(height), length: 0.1, chamferRadius: 0.05)
         box.materials = [material]
-        box.firstMaterial?.transparency = 0.8
+        box.firstMaterial?.transparency = 0.5
         
         let node = SCNNode(geometry: box)
         
