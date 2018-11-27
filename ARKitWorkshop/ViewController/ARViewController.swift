@@ -11,24 +11,15 @@ import SceneKit
 import ARKit
 import CoreLocation
 
-//let point1 = SCNVector3Make(3.9633987,-1.0010028,-4.06933)
-//let point2 = SCNVector3Make(9.339279,-0.30742192,-4.286807)
-
-struct PathPoint {
-    let point: SCNVector3
-    let emoji: String
-}
-
-//➡️
-//⬅️
-let point1 = PathPoint(point: SCNVector3Make(0,0,-5), emoji: "➡️")
-let point2 = PathPoint(point: SCNVector3Make(5,0,-5), emoji: "⬅️")
-
 class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, CLLocationManagerDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var informationLabel: UILabel!
-
+    @IBOutlet weak var restartMapButton: UIButton!
+    @IBOutlet weak var storeDescriptionView: StoreDescriptionView!
+    
+    @IBOutlet weak var roundedBackgroundView: UIView!
+    
     var hasDrawn = false
     var grids = [Grid]()
 
@@ -41,11 +32,12 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     var pathNodes:[SCNNode] = []
     var lowestPlaneAnchor: ARAnchor?
     var starNode: SCNNode!
+    private var previousPosition: SCNVector3?
+    
     //CoreLocation
     
     let locationManager = CLLocationManager()
     var locationHelper = CLLocationHelper()
-    let path: [PathPoint] = [point1, point2]
 
     //-----------------------------------------------------------
     //MARK - View Lifecycle
@@ -54,11 +46,22 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScene()
+        
+        informationLabel.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         startSession()
+        
+        view.sw_roundedCorner(for: self.roundedBackgroundView)
+        view.sw_shadow(for: self.storeDescriptionView)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        LocalDataManager.loadLocalMapData(receivedDataHandler: receivedData)
+        UIApplication.shared.isIdleTimerDisabled = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -72,9 +75,9 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     
     private func setupScene() {
         sceneView.delegate = self
-        sceneView.showsStatistics = true
+//        sceneView.showsStatistics = true
         sceneView.automaticallyUpdatesLighting = true
-        sceneView.debugOptions = [.showFeaturePoints, .showWorldOrigin, .showCameras]
+//        sceneView.debugOptions = [.showFeaturePoints, .showWorldOrigin, .showCameras]
     }
     
     private func startSession() {
@@ -83,42 +86,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
         configuration.worldAlignment = .gravityAndHeading
         sceneView.session.delegate = self
         sceneView.session.run(configuration)
-        
-    }
-    
-    func drawNode() {
-        if hasDrawn {
-            return
-        }
-        
-        hasDrawn = true
-        var previousPoint = cameraVector!
-        
-        path.enumerated().forEach { (offset, destPathPoint) in
-            let destVector = destPathPoint.point
-            let destination =  SCNVector3Make(cameraVector!.x + destVector.x, 0, cameraVector!.z + destVector.z)
-            addNode(to: destination, emoji: destPathPoint.emoji )
-            addPathToNode(with: previousPoint, destinationPosition: destination)
-            previousPoint = destVector
-        }
-        
-    }
-
-    func addNode(to position: SCNVector3, emoji: String) {
-        let arrow = makeBillboardNode(emoji.image()!)
-        arrow.position = position
-        arrow.scale = SCNVector3Make(0.1, 0.1, 0.1)
-        arrow.castsShadow = true
-        arrow.opacity = 0.7
-        sceneView.scene.rootNode.addChildNode(arrow)
-    }
-    
-    func makeBillboardNode(_ image: UIImage) -> SCNNode {
-        let plane = SCNPlane(width: 10, height: 10)
-        plane.firstMaterial!.diffuse.contents = image
-        let node = SCNNode(geometry: plane)
-        node.constraints = [SCNBillboardConstraint()]
-        return node
     }
     
 
@@ -127,21 +94,37 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     //-----------------------------------------------------------
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        handleSceneTap(touches: touches)
+    }
+    
+    /// - Tag: PlaceCharacter
+    func handleSceneTap(touches: Set<UITouch>) {
         
-        guard let location = touches.first?.location(in: sceneView) else {
-            return
+        guard let location = touches.first?.location(in: sceneView),
+            let hitTestResult = sceneView
+            .hitTest(location,
+                     types: [.existingPlaneUsingGeometry, .estimatedHorizontalPlane])
+            .first
+            else { return }
+
+        
+        // Place Waypoint ************************
+        let targetPosition = SCNVector3(hitTestResult.worldTransform.translation)
+        
+        if let previousPosition = previousPosition {
+            let tNode = SCNNode()
+            tNode.position = previousPosition
+            tNode.look(at: targetPosition)
+            let tempTransform = simd_float4x4(tNode.transform)
+            
+            let lineLength = previousPosition.distance(vector: targetPosition)
+            let anchor = WaypointLineAnchor(length: lineLength, transform: tempTransform)
+            sceneView.session.add(anchor: anchor)
+        } else {
+            showFeedback(text: "Saved!")
         }
         
-        let hitResultsFeaturePoints: [ARHitTestResult] = sceneView.hitTest(location, types: [.estimatedHorizontalPlane])
-        
-        guard let firstPoint =  hitResultsFeaturePoints.first else {
-            return
-        }
-        
-        let anchor = firstPoint.anchor ?? ARAnchor(transform: firstPoint.worldTransform)
-        sceneView.session.add(anchor: anchor)
-        
-        addPathToNode(with: cameraVector, destinationPosition: anchor.transform.position())
+        previousPosition = targetPosition
     }
     
     //-----------------------------------------------------------
@@ -156,74 +139,23 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     //-----------------------------------------------------------
     //MARK - ARSCNViewDelegate
     //-----------------------------------------------------------
+
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        
-        print("----------------- Called rendered with node: \(node), anchor: \(anchor)")
-        if !anchor.isKind(of: ARPlaneAnchor.self) {
-            
-            var distanceString: String = "-"
-            if let startPos = cameraVector {
-                let distance = node.worldPosition.distance(vector: startPos)
-                distanceString = String(distance)
-            }
-
-            let sphereNode = BaseNode(title: "Nodes")
-            sphereNode.addNode(with: 0.25, and: UIColor.blue, and: distanceString)
-            node.addChildNode(sphereNode)
-
-            self.destinationNode = sphereNode
-        }
-        
-        if let planeAnchor = anchor as? ARPlaneAnchor {
-            planeAnchors.append(planeAnchor)
-
-            planeAnchors.sort { (anchor1, anchor2) -> Bool in
-                anchor1.transform.columns.3.y < anchor2.transform.columns.3.y
-            }
-            lowestPlaneAnchor = planeAnchors.first
-            
-            drawNode()
-
-            DispatchQueue.main.async { [weak self] in
-                self?.informationLabel.text = "Success! We have detected the floor. Please begin your wayfinding journey :D!"
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4, execute: {
-                    self?.informationLabel.isHidden = true
-                })
-            }
-            
-            print("------------------------ Lowest Plane Anchor is: \(String(describing: lowestPlaneAnchor))")
+ 
+        if let waypointAnchor = anchor as? WaypointLineAnchor {
+            let waypointBox = SCNNode.lineNode(of: CGFloat(waypointAnchor.length))
+            node.addChildNode(waypointBox)
+        } else {
+            print("---------- IT DOESNT KNOW WHAT TO DO for anchor type: \(anchor)")
         }
     }
-    
-//    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-////        let grid = self.grids.filter { grid in
-////            return grid.anchor.identifier == anchor.identifier
-////            }.first
-////
-////        guard let foundGrid = grid else {
-////            return
-////        }
-////
-////        foundGrid.update(anchor: anchor as! ARPlaneAnchor)
-//
-//    }
-//
-//    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
-//
-////        guard let destNode = self.destinationNode else {
-////            return
-////        }
-////
-////        addPathToNode(with: cameraVector, destinationPosition: destNode.worldPosition)
-//    }
     
     //-----------------------------------------------------------
     //MARK - Helpers
     //-----------------------------------------------------------
 
- 
+
     func addPathToNode(with startPosition: SCNVector3?, destinationPosition: SCNVector3?) {
         let hasDrawnToDestination = destinationPositions.contains(where: { position in
             
@@ -237,31 +169,106 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
         }
         
         destinationPositions.append(destinationPosition)
-        
-        print("*~*~*~*~*~*~~**~ ADDING PATH TO DESTINATION NODE: \(destinationNode) \n, where destinationPositions are: \(destinationPositions)")
         addLine(startPosition: startPosition, destPosition: destinationPosition)
-        
     }
-    
-    func addPlane(startPosition: SCNVector3, destPosition: SCNVector3) {
-        guard let lowestPlaneAnchor = lowestPlaneAnchor as? ARPlaneAnchor else {
-            print("---------------- Couldn't even find one plane anchor")
-            return
-        }
-        
-        let planeNode = PlaneNode().planeNode(baselinesPlaneAnchor: lowestPlaneAnchor, startPosition: startPosition, destPosition: destPosition)
-        sceneView.scene.rootNode.addChildNode(planeNode)
-    }
+
     
     func addLine(startPosition: SCNVector3, destPosition: SCNVector3) {
         guard let lowestPlaneAnchor = lowestPlaneAnchor as? ARPlaneAnchor else {
-            print("---------------- Couldn't even find one plane anchor")
             return
         }
         
         
-        let lineNode = SCNNode.lineNode(baselinePlaneAnchor:lowestPlaneAnchor, startPosition: startPosition, destinationPosition: destPosition)
+        let lineNode = SCNNode.lineNode(baselinePlaneAnchor:lowestPlaneAnchor,
+                                        startPosition: startPosition,
+                                        destinationPosition: destPosition)
         sceneView.scene.rootNode.addChildNode(lineNode)
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - Draw Methods
+    //-----------------------------------------------------------
+
+    func makeBillboardNode(_ image: UIImage) -> SCNNode {
+        let plane = SCNPlane(width: 10, height: 10)
+        plane.firstMaterial!.diffuse.contents = image
+        let node = SCNNode(geometry: plane)
+        node.constraints = [SCNBillboardConstraint()]
+        return node
+    }
+    
+    //-----------------------------------------------------------
+    //MARK - UIButtonTapped
+    //-----------------------------------------------------------
+    
+    @IBAction func restartMapButtonTapped(_ sender: Any) {
+        runNewSession()
+        LocalDataManager.deleteData()
+    }
+    
+    @IBAction func saveMapButtonTapped(_ sender: Any) {
+        
+        sceneView.session.getCurrentWorldMap { worldMap, error in
+            guard let map = worldMap
+                else { print("Error: \(error!.localizedDescription)"); return }
+            
+            print("Saving map with \(map.anchors.count) anchors")
+            
+            guard let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: false) else {
+                fatalError("can't encode map")
+            }
+            LocalDataManager.saveData(data)
+
+            self.showFeedback(text: "Saved!")
+        }
+        
+    }
+    
+    private func runNewSession() {
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = .horizontal
+        sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+    }
+    
+    
+    func receivedData(_ data: Data) {
+        
+        if let unarchived = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [ARWorldMap.classForKeyedUnarchiver()], from: data),
+           
+            
+            let worldMap = unarchived as? ARWorldMap {
+            
+            // Run the session with the received world map.
+            let configuration = ARWorldTrackingConfiguration()
+            configuration.planeDetection = .horizontal
+            configuration.initialWorldMap = worldMap
+            
+            print("Loading map with \(worldMap.anchors.count) anchors")
+            
+            sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+            
+            for anchor in worldMap.anchors {
+                sceneView.session.add(anchor: anchor)
+            }
+            
+            sceneView.setNeedsLayout()
+            sceneView.setNeedsDisplay()
+            
+            showFeedback(text: "Loaded")
+        } else if let unarchived = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [ARAnchor.classForKeyedUnarchiver()], from: data),
+            let anchor = unarchived as? ARAnchor {
+            sceneView.session.add(anchor: anchor)
+            
+            
+            sceneView.setNeedsLayout()
+            sceneView.setNeedsDisplay()
+            
+            showFeedback(text: "Loaded")
+
+        } else {
+            showFeedback(text: "Failed to load data", isPositive: false)
+            print("ERROR: unknown data recieved")
+        }
     }
     
     //-----------------------------------------------------------
@@ -278,5 +285,18 @@ class ARViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, 
     
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
+    }
+    
+    func showFeedback(text: String, isPositive: Bool = true) {
+        self.informationLabel.isHidden = false
+        self.informationLabel.alpha = 1.0
+        self.informationLabel.text = text
+        self.informationLabel.backgroundColor = isPositive ? UIColor.green : UIColor.red
+        
+        UIView.animate(withDuration: 1.0, animations: {
+            self.informationLabel.alpha = 0
+        }, completion: { _ in
+            self.informationLabel.isHidden = true
+        })
     }
 }

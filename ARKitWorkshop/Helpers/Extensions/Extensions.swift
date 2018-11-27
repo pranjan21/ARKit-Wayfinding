@@ -11,26 +11,36 @@ import UIKit
 import ARKit
 
 extension UIView {
-    func sw_roundedFrame() {
-        let circleLayer = CAShapeLayer()
-        circleLayer.frame = bounds
-        circleLayer.strokeColor = UIColor.white.cgColor
-        circleLayer.fillColor = UIColor.clear.cgColor
-        circleLayer.lineWidth = 2.0
-        circleLayer.path = CGPath(ellipseIn: circleLayer.bounds, transform: nil)
-        
-        let maskLayer = CAShapeLayer()
-        maskLayer.frame = bounds
-        maskLayer.fillColor = UIColor.white.cgColor
-        maskLayer.path = CGPath(ellipseIn: circleLayer.bounds, transform: nil)
-        
-        layer.mask = maskLayer
-        layer.addSublayer(circleLayer)
+    func sw_roundedCorner(for containerView:UIView) {
+        containerView.layer.cornerRadius = 8.0
+        containerView.layer.masksToBounds = true
+    }
+    
+    func sw_shadow(for containerView:UIView, roundedCorner: Bool = true, disable: Bool = false) {
+        containerView.layer.cornerRadius = roundedCorner ? 4.0 : 0.0
+        containerView.layer.shadowColor = UIColor.black.cgColor
+        containerView.layer.shadowOpacity = disable ? 0.0 : 0.4
+        containerView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+        containerView.layer.shadowRadius = 8.0
+        containerView.layer.masksToBounds = false
     }
 }
 
 extension matrix_float4x4 {
     func position() -> SCNVector3 {
         return SCNVector3(columns.3.x, columns.3.y, columns.3.z)
+    }
+}
+
+extension float4x4 {
+    var translation: float3 {
+        return float3(columns.3.x, columns.3.y, columns.3.z)
+    }
+    
+    init(translation vector: float3) {
+        self.init(float4(1, 0, 0, 0),
+                  float4(0, 1, 0, 0),
+                  float4(0, 0, 1, 0),
+                  float4(vector.x, vector.y, vector.z, 1))
     }
 }

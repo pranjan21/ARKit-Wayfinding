@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3E16F27945D229291C6BEDFE /* Pods_ARKitWorkshop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE690A334140ED5AF6BD9BB2 /* Pods_ARKitWorkshop.framework */; };
+		8503567F21AD1E4D008D4100 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8503567C21AD1E4D008D4100 /* RoundedButton.swift */; };
+		8503568021AD1E4D008D4100 /* LocalDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8503567E21AD1E4D008D4100 /* LocalDataManager.swift */; };
+		8503568321AD2B55008D4100 /* WaypointLineAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8503568221AD2B55008D4100 /* WaypointLineAnchor.swift */; };
+		8503568521AD5157008D4100 /* StoreDescriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8503568421AD5157008D4100 /* StoreDescriptionView.swift */; };
 		8515580C21AA800A00E1CDFF /* FloatingPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8515580B21AA800A00E1CDFF /* FloatingPoint+Extension.swift */; };
 		8515580E21AA802D00E1CDFF /* Image+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8515580D21AA802D00E1CDFF /* Image+String.swift */; };
 		8515581221AAB9C600E1CDFF /* CLLocationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8515581121AAB9C600E1CDFF /* CLLocationHelper.swift */; };
@@ -49,6 +53,10 @@
 
 /* Begin PBXFileReference section */
 		6BF42BF99CCA7A514E02278E /* Pods-ARKitWorkshop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKitWorkshop.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ARKitWorkshop/Pods-ARKitWorkshop.debug.xcconfig"; sourceTree = "<group>"; };
+		8503567C21AD1E4D008D4100 /* RoundedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
+		8503567E21AD1E4D008D4100 /* LocalDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDataManager.swift; sourceTree = "<group>"; };
+		8503568221AD2B55008D4100 /* WaypointLineAnchor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaypointLineAnchor.swift; sourceTree = "<group>"; };
+		8503568421AD5157008D4100 /* StoreDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreDescriptionView.swift; sourceTree = "<group>"; };
 		8515580B21AA800A00E1CDFF /* FloatingPoint+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloatingPoint+Extension.swift"; sourceTree = "<group>"; };
 		8515580D21AA802D00E1CDFF /* Image+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+String.swift"; sourceTree = "<group>"; };
 		8515581121AAB9C600E1CDFF /* CLLocationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationHelper.swift; sourceTree = "<group>"; };
@@ -107,6 +115,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8503567B21AD1E4D008D4100 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8503567C21AD1E4D008D4100 /* RoundedButton.swift */,
+				8503568421AD5157008D4100 /* StoreDescriptionView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8503567D21AD1E4D008D4100 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				8503567E21AD1E4D008D4100 /* LocalDataManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		8503568121AD2B55008D4100 /* ARAnchors */ = {
+			isa = PBXGroup;
+			children = (
+				8503568221AD2B55008D4100 /* WaypointLineAnchor.swift */,
+			);
+			path = ARAnchors;
+			sourceTree = "<group>";
+		};
 		8515580F21AAB98100E1CDFF /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,6 +226,9 @@
 		85D8E3A3213DD8C9009C223B /* ARKitWorkshop */ = {
 			isa = PBXGroup;
 			children = (
+				8503568121AD2B55008D4100 /* ARAnchors */,
+				8503567D21AD1E4D008D4100 /* Utilities */,
+				8503567B21AD1E4D008D4100 /* Views */,
 				8549BC6A21A5372F005B3424 /* Storyboards */,
 				8549BC6921A53702005B3424 /* Helpers */,
 				8549BC6821A536E1005B3424 /* ViewController */,
@@ -386,16 +422,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				8549BC6C21A53827005B3424 /* LineNode.swift in Sources */,
+				8503568321AD2B55008D4100 /* WaypointLineAnchor.swift in Sources */,
 				8549BC6021A3F3AD005B3424 /* SCNVectorExtention.swift in Sources */,
 				8515580E21AA802D00E1CDFF /* Image+String.swift in Sources */,
 				8549BC6721A536C5005B3424 /* Extensions.swift in Sources */,
 				8549BC6521A532EF005B3424 /* SphereNode.swift in Sources */,
+				8503568521AD5157008D4100 /* StoreDescriptionView.swift in Sources */,
 				8549BC7021A57058005B3424 /* PlaneNode.swift in Sources */,
 				8515586121AC117700E1CDFF /* MapViewController.swift in Sources */,
 				85D8E3A9213DD8C9009C223B /* ARViewController.swift in Sources */,
+				8503568021AD1E4D008D4100 /* LocalDataManager.swift in Sources */,
 				85D8E3A5213DD8C9009C223B /* AppDelegate.swift in Sources */,
 				8558BBBE219960610042C302 /* Grid.swift in Sources */,
 				8515581221AAB9C600E1CDFF /* CLLocationHelper.swift in Sources */,
+				8503567F21AD1E4D008D4100 /* RoundedButton.swift in Sources */,
 				8515580C21AA800A00E1CDFF /* FloatingPoint+Extension.swift in Sources */,
 				8549BC6E21A53CA3005B3424 /* LineSegment.swift in Sources */,
 			);
@@ -574,7 +614,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = X22U8QD8ZC;
+				DEVELOPMENT_TEAM = 7RT43N8KSR;
 				INFOPLIST_FILE = ARKitWorkshop/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -594,7 +634,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = X22U8QD8ZC;
+				DEVELOPMENT_TEAM = 7RT43N8KSR;
 				INFOPLIST_FILE = ARKitWorkshop/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
