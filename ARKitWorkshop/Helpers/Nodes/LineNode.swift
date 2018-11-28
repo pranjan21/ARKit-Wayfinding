@@ -33,6 +33,8 @@ extension SCNNode {
     }
     
     static func lineNode(of length: CGFloat) -> SCNNode {
+        
+        print("--------------- Length is: \(length)")
         let height: CGFloat = 0.03
         
         let material = SCNMaterial()
@@ -49,6 +51,25 @@ extension SCNNode {
         boxNode.position.y = Float(height) / 2.0
         // Position the start of the box at the origin
         boxNode.position.z = -Float(length) / 2.0
+        
+        let arrowPlane = SCNBox(width: 0.5, height: 0.01, length: 0.5, chamferRadius: 0.05)
+        let clearMaterial = SCNMaterial()
+        clearMaterial.diffuse.contents = UIColor.clear
+
+        let arrowMaterial = SCNMaterial()
+        arrowMaterial.diffuse.contents = UIImage.init(imageLiteralResourceName: "arrow-up-4")
+        
+        //[back, right, front, left, bottom, top]
+        arrowPlane.materials = [clearMaterial,clearMaterial, clearMaterial, clearMaterial, clearMaterial, arrowMaterial]
+        let arrowNode = SCNNode(geometry: arrowPlane)
+        
+//        arrowNode.eulerAngles.x = Float.pi/2 //SCNVector3(Double.pi/2, 0, 0)
+        // Position the bottom of the box to rest flat against the ground
+        arrowNode.eulerAngles.x = Float.pi
+        arrowNode.position.y = Float(height) / 2.0
+//        // Position the start of the box at the origin
+//        arrowNode.position.z = -Float(length) / 2.0
+        boxNode.addChildNode(arrowNode)
         
         return boxNode
     }

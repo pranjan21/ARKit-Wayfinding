@@ -58,17 +58,21 @@
                                                     </label>
                                                 </subviews>
                                             </stackView>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gucci1" translatesAutoresizingMaskIntoConstraints="NO" id="E7c-9e-Q59">
+                                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9H5-Z9-zP4">
                                                 <rect key="frame" x="255" y="0.0" width="88" height="88"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" secondItem="E7c-9e-Q59" secondAttribute="height" multiplier="1:1" id="9TQ-XE-gj0"/>
+                                                    <constraint firstAttribute="width" secondItem="9H5-Z9-zP4" secondAttribute="height" multiplier="1:1" id="IbH-6p-beu"/>
                                                 </constraints>
+                                                <state key="normal" backgroundImage="gucci1"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                         <integer key="value" value="5"/>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
-                                            </imageView>
+                                                <connections>
+                                                    <action selector="destinationButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="me0-9O-y4A"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                     </stackView>
                                 </subviews>
